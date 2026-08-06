@@ -1,0 +1,11 @@
+REVOKE EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.mis_unidades(uuid) FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.administra_consorcio(uuid, uuid) FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.pertenece_consorcio(uuid, uuid) FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.consorcio_de_unidad(uuid) FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.mis_unidades(uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.administra_consorcio(uuid, uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.pertenece_consorcio(uuid, uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.consorcio_de_unidad(uuid) TO authenticated, service_role;
