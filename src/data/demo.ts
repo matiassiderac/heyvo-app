@@ -938,3 +938,15 @@ export function formatFechaCorta(iso: string) {
     timeZone: "America/Argentina/Buenos_Aires",
   }).format(new Date(iso));
 }
+
+export function formatBytes(bytes: number | null) {
+  if (!bytes) return "—";
+  const unidades = ["B", "KB", "MB", "GB"];
+  let valor = bytes;
+  let i = 0;
+  while (valor >= 1024 && i < unidades.length - 1) {
+    valor /= 1024;
+    i++;
+  }
+  return `${valor.toFixed(i === 0 ? 0 : 1).replace(".", ",")} ${unidades[i]}`;
+}

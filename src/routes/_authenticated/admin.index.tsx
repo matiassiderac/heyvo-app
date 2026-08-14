@@ -5,7 +5,6 @@ import { AdminShell } from "@/components/heyvo/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  asambleas,
   consorcios,
   etiquetasEstadoTicket,
   formatARS,
@@ -33,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 });
 
 function Panel() {
-  const { tickets, boletas } = useDemo();
+  const { tickets, boletas, asambleas } = useDemo();
   const abiertos = tickets.filter((t) => !["cerrado", "resuelto"].includes(t.estado));
   const vencidos = abiertos.filter((t) => new Date(t.vence) < new Date("2026-08-06"));
   const cobrado = boletas.filter((b) => b.estado === "paga").reduce((a, b) => a + b.total, 0);

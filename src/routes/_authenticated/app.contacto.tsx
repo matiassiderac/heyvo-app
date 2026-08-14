@@ -3,14 +3,14 @@ import { Phone, ShieldAlert } from "lucide-react";
 
 import { AppShell, PieDemo } from "@/components/heyvo/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
-import { faqs } from "@/data/demo";
-import { lineasEmergencia, useContactosConsorcio } from "@/lib/contactos";
+import { contactos, faqs } from "@/data/demo";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/app/contacto")({
   head: () => ({
@@ -32,7 +32,8 @@ export const Route = createFileRoute("/_authenticated/app/contacto")({
 });
 
 function Contacto() {
-  const { contactos, cargando } = useContactosConsorcio();
+  const urgentes = contactos.filter((c) => c.urgente);
+  const resto = contactos.filter((c) => !c.urgente);
 
   return (
     <AppShell titulo="Contacto" subtitulo="Emergencias y consultas frecuentes.">
@@ -42,9 +43,9 @@ function Contacto() {
             <ShieldAlert className="h-4 w-4" /> Si hay riesgo de vida, llamá primero
           </p>
           <div className="mt-3 space-y-2">
-            {lineasEmergencia.map((c) => (
+            {urgentes.map((c) => (
               <a
-                key={c.id}
+                key={c.telefono}
                 href={`tel:${c.telefono}`}
                 className="flex items-center justify-between rounded-xl bg-card p-3 text-sm"
               >
@@ -61,18 +62,12 @@ function Contacto() {
         </CardContent>
       </Card>
 
-      <h2 className="mb-2 mt-5 text-sm font-semibold">Contactos del edificio</h2>
-      {cargando && <p className="text-sm text-muted-foreground">Buscando contactos…</p>}
-      {!cargando && contactos.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          La administración todavía no cargó contactos ni proveedores para tu edificio.
-        </p>
-      )}
+      <h2 className="mb-2 mt-5 text-sm font-semibold">Otros contactos</h2>
       <div className="space-y-2">
-        {contactos.map((c) => (
-          <a key={c.id} href={`tel:${c.telefono}`} className="block">
+        {resto.map((c) => (
+          <a key={c.telefono} href={`tel:${c.telefono}`} className="block">
             <Card>
-              <CardContent className="flex items-center justify-between gap-3 p-4">
+              <CardContent className={cn("flex items-center justify-between gap-3 p-4")}>
                 <span>
                   <span className="block text-sm font-medium">{c.nombre}</span>
                   <span className="block text-xs text-muted-foreground">{c.detalle}</span>

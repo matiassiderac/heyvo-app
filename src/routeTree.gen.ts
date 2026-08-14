@@ -12,19 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedPlataformaRouteImport } from './routes/_authenticated/plataforma'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin.avisos'
 import { Route as AuthenticatedAdminConversacionesRouteImport } from './routes/_authenticated/admin.conversaciones'
-import { Route as AuthenticatedAdminDocumentosRouteImport } from './routes/_authenticated/admin.documentos'
 import { Route as AuthenticatedAdminExpensasRouteImport } from './routes/_authenticated/admin.expensas'
 import { Route as AuthenticatedAdminPersonasRouteImport } from './routes/_authenticated/admin.personas'
 import { Route as AuthenticatedAdminProveedoresRouteImport } from './routes/_authenticated/admin.proveedores'
@@ -40,8 +33,6 @@ import { Route as AuthenticatedAppMudanzasRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppReclamosRouteImport } from './routes/_authenticated/app.reclamos'
 import { Route as AuthenticatedAppReservasRouteImport } from './routes/_authenticated/app.reservas'
-import { Route as AuthenticatedAppPagoReferenciaRouteImport } from './routes/_authenticated/app.pago.$referencia'
-import { Route as ApiPublicWebhooksPagosMercadopagoRouteImport } from './routes/api/public/webhooks/pagos.mercadopago'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,23 +48,6 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -94,38 +68,15 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Char91DotmcpChar93InvokeToolToolRoute =
-  Char91DotmcpChar93InvokeToolToolRouteImport.update({
-    id: '/.mcp/invoke-tool/$tool',
-    path: '/.mcp/invoke-tool/$tool',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
-const AuthenticatedAdminAvisosRoute =
-  AuthenticatedAdminAvisosRouteImport.update({
-    id: '/avisos',
-    path: '/avisos',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 const AuthenticatedAdminConversacionesRoute =
   AuthenticatedAdminConversacionesRouteImport.update({
     id: '/conversaciones',
     path: '/conversaciones',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminDocumentosRoute =
-  AuthenticatedAdminDocumentosRouteImport.update({
-    id: '/documentos',
-    path: '/documentos',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminExpensasRoute =
@@ -215,34 +166,15 @@ const AuthenticatedAppReservasRoute =
     path: '/reservas',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppPagoReferenciaRoute =
-  AuthenticatedAppPagoReferenciaRouteImport.update({
-    id: '/pago/$referencia',
-    path: '/pago/$referencia',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
-const ApiPublicWebhooksPagosMercadopagoRoute =
-  ApiPublicWebhooksPagosMercadopagoRouteImport.update({
-    id: '/api/public/webhooks/pagos/mercadopago',
-    path: '/api/public/webhooks/pagos/mercadopago',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/mcp': typeof McpRoute
-  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
-  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/plataforma': typeof AuthenticatedPlataformaRoute
   '/api/chat': typeof ApiChatRoute
-  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/conversaciones': typeof AuthenticatedAdminConversacionesRoute
-  '/admin/documentos': typeof AuthenticatedAdminDocumentosRoute
   '/admin/expensas': typeof AuthenticatedAdminExpensasRoute
   '/admin/personas': typeof AuthenticatedAdminPersonasRoute
   '/admin/proveedores': typeof AuthenticatedAdminProveedoresRoute
@@ -259,22 +191,13 @@ export interface FileRoutesByFullPath {
   '/app/reservas': typeof AuthenticatedAppReservasRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/app/': typeof AuthenticatedAppIndexRoute
-  '/app/pago/$referencia': typeof AuthenticatedAppPagoReferenciaRoute
-  '/api/public/webhooks/pagos/mercadopago': typeof ApiPublicWebhooksPagosMercadopagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/mcp': typeof McpRoute
-  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
-  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/plataforma': typeof AuthenticatedPlataformaRoute
   '/api/chat': typeof ApiChatRoute
-  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/conversaciones': typeof AuthenticatedAdminConversacionesRoute
-  '/admin/documentos': typeof AuthenticatedAdminDocumentosRoute
   '/admin/expensas': typeof AuthenticatedAdminExpensasRoute
   '/admin/personas': typeof AuthenticatedAdminPersonasRoute
   '/admin/proveedores': typeof AuthenticatedAdminProveedoresRoute
@@ -291,26 +214,17 @@ export interface FileRoutesByTo {
   '/app/reservas': typeof AuthenticatedAppReservasRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/app': typeof AuthenticatedAppIndexRoute
-  '/app/pago/$referencia': typeof AuthenticatedAppPagoReferenciaRoute
-  '/api/public/webhooks/pagos/mercadopago': typeof ApiPublicWebhooksPagosMercadopagoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/mcp': typeof McpRoute
-  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
-  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/plataforma': typeof AuthenticatedPlataformaRoute
   '/api/chat': typeof ApiChatRoute
-  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/conversaciones': typeof AuthenticatedAdminConversacionesRoute
-  '/_authenticated/admin/documentos': typeof AuthenticatedAdminDocumentosRoute
   '/_authenticated/admin/expensas': typeof AuthenticatedAdminExpensasRoute
   '/_authenticated/admin/personas': typeof AuthenticatedAdminPersonasRoute
   '/_authenticated/admin/proveedores': typeof AuthenticatedAdminProveedoresRoute
@@ -327,26 +241,17 @@ export interface FileRoutesById {
   '/_authenticated/app/reservas': typeof AuthenticatedAppReservasRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
-  '/_authenticated/app/pago/$referencia': typeof AuthenticatedAppPagoReferenciaRoute
-  '/api/public/webhooks/pagos/mercadopago': typeof ApiPublicWebhooksPagosMercadopagoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
-    | '/mcp'
-    | '/.mcp/list-tools'
-    | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/app'
     | '/plataforma'
     | '/api/chat'
-    | '/.lovable/oauth/consent'
-    | '/.mcp/invoke-tool/$tool'
-    | '/admin/avisos'
     | '/admin/conversaciones'
-    | '/admin/documentos'
     | '/admin/expensas'
     | '/admin/personas'
     | '/admin/proveedores'
@@ -363,22 +268,13 @@ export interface FileRouteTypes {
     | '/app/reservas'
     | '/admin/'
     | '/app/'
-    | '/app/pago/$referencia'
-    | '/api/public/webhooks/pagos/mercadopago'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
-    | '/mcp'
-    | '/.mcp/list-tools'
-    | '/.well-known/oauth-protected-resource'
     | '/plataforma'
     | '/api/chat'
-    | '/.lovable/oauth/consent'
-    | '/.mcp/invoke-tool/$tool'
-    | '/admin/avisos'
     | '/admin/conversaciones'
-    | '/admin/documentos'
     | '/admin/expensas'
     | '/admin/personas'
     | '/admin/proveedores'
@@ -395,25 +291,16 @@ export interface FileRouteTypes {
     | '/app/reservas'
     | '/admin'
     | '/app'
-    | '/app/pago/$referencia'
-    | '/api/public/webhooks/pagos/mercadopago'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/mcp'
-    | '/.mcp/list-tools'
-    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
     | '/_authenticated/app'
     | '/_authenticated/plataforma'
     | '/api/chat'
-    | '/.lovable/oauth/consent'
-    | '/.mcp/invoke-tool/$tool'
-    | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/conversaciones'
-    | '/_authenticated/admin/documentos'
     | '/_authenticated/admin/expensas'
     | '/_authenticated/admin/personas'
     | '/_authenticated/admin/proveedores'
@@ -430,21 +317,13 @@ export interface FileRouteTypes {
     | '/_authenticated/app/reservas'
     | '/_authenticated/admin/'
     | '/_authenticated/app/'
-    | '/_authenticated/app/pago/$referencia'
-    | '/api/public/webhooks/pagos/mercadopago'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  McpRoute: typeof McpRoute
-  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
-  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
-  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
-  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicWebhooksPagosMercadopagoRoute: typeof ApiPublicWebhooksPagosMercadopagoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -468,27 +347,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/.mcp/list-tools': {
-      id: '/.mcp/list-tools'
-      path: '/.mcp/list-tools'
-      fullPath: '/.mcp/list-tools'
-      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -519,20 +377,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/.mcp/invoke-tool/$tool': {
-      id: '/.mcp/invoke-tool/$tool'
-      path: '/.mcp/invoke-tool/$tool'
-      fullPath: '/.mcp/invoke-tool/$tool'
-      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -540,25 +384,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/avisos': {
-      id: '/_authenticated/admin/avisos'
-      path: '/avisos'
-      fullPath: '/admin/avisos'
-      preLoaderRoute: typeof AuthenticatedAdminAvisosRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
     '/_authenticated/admin/conversaciones': {
       id: '/_authenticated/admin/conversaciones'
       path: '/conversaciones'
       fullPath: '/admin/conversaciones'
       preLoaderRoute: typeof AuthenticatedAdminConversacionesRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/documentos': {
-      id: '/_authenticated/admin/documentos'
-      path: '/documentos'
-      fullPath: '/admin/documentos'
-      preLoaderRoute: typeof AuthenticatedAdminDocumentosRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/expensas': {
@@ -666,27 +496,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppReservasRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/pago/$referencia': {
-      id: '/_authenticated/app/pago/$referencia'
-      path: '/pago/$referencia'
-      fullPath: '/app/pago/$referencia'
-      preLoaderRoute: typeof AuthenticatedAppPagoReferenciaRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/api/public/webhooks/pagos/mercadopago': {
-      id: '/api/public/webhooks/pagos/mercadopago'
-      path: '/api/public/webhooks/pagos/mercadopago'
-      fullPath: '/api/public/webhooks/pagos/mercadopago'
-      preLoaderRoute: typeof ApiPublicWebhooksPagosMercadopagoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
-  AuthenticatedAdminAvisosRoute: typeof AuthenticatedAdminAvisosRoute
   AuthenticatedAdminConversacionesRoute: typeof AuthenticatedAdminConversacionesRoute
-  AuthenticatedAdminDocumentosRoute: typeof AuthenticatedAdminDocumentosRoute
   AuthenticatedAdminExpensasRoute: typeof AuthenticatedAdminExpensasRoute
   AuthenticatedAdminPersonasRoute: typeof AuthenticatedAdminPersonasRoute
   AuthenticatedAdminProveedoresRoute: typeof AuthenticatedAdminProveedoresRoute
@@ -695,9 +509,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
-  AuthenticatedAdminAvisosRoute: AuthenticatedAdminAvisosRoute,
   AuthenticatedAdminConversacionesRoute: AuthenticatedAdminConversacionesRoute,
-  AuthenticatedAdminDocumentosRoute: AuthenticatedAdminDocumentosRoute,
   AuthenticatedAdminExpensasRoute: AuthenticatedAdminExpensasRoute,
   AuthenticatedAdminPersonasRoute: AuthenticatedAdminPersonasRoute,
   AuthenticatedAdminProveedoresRoute: AuthenticatedAdminProveedoresRoute,
@@ -720,7 +532,6 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppReclamosRoute: typeof AuthenticatedAppReclamosRoute
   AuthenticatedAppReservasRoute: typeof AuthenticatedAppReservasRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
-  AuthenticatedAppPagoReferenciaRoute: typeof AuthenticatedAppPagoReferenciaRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
@@ -735,7 +546,6 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppReclamosRoute: AuthenticatedAppReclamosRoute,
   AuthenticatedAppReservasRoute: AuthenticatedAppReservasRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
-  AuthenticatedAppPagoReferenciaRoute: AuthenticatedAppPagoReferenciaRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =
@@ -760,15 +570,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  McpRoute: McpRoute,
-  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
-  Char91DotwellKnownChar93OauthProtectedResourceRoute:
-    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiChatRoute: ApiChatRoute,
-  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
-  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicWebhooksPagosMercadopagoRoute:
-    ApiPublicWebhooksPagosMercadopagoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

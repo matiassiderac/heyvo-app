@@ -1,5 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CreditCard, Download, Landmark } from "lucide-react";
 import { toast } from "sonner";
@@ -24,7 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import { formatARS, formatFecha, type Boleta } from "@/data/demo";
 import { useDemo } from "@/lib/demo-session";
-import { crearIntentoPago } from "@/lib/pagos.functions";
 
 export const Route = createFileRoute("/_authenticated/app/expensas")({
   head: () => ({
@@ -46,9 +44,7 @@ export const Route = createFileRoute("/_authenticated/app/expensas")({
 });
 
 function Expensas() {
-  const { boletas, sesion } = useDemo();
-  const crearIntento = useServerFn(crearIntentoPago);
-  const navigate = useNavigate();
+  const { boletas, pagarBoleta, sesion } = useDemo();
   const [aPagar, setAPagar] = useState<Boleta | null>(null);
   const [pagando, setPagando] = useState(false);
 
@@ -56,14 +52,11 @@ function Expensas() {
     if (!aPagar) return;
     setPagando(true);
     try {
-      const intento = await crearIntento({ data: { boletaId: aPagar.id } });
+      await pagarBoleta(aPagar.id);
+      toast.success("Pago simulado aprobado. En la fase 3 se conecta Mercado Pago real.");
       setAPagar(null);
-      await navigate({
-        to: "/app/pago/$referencia",
-        params: { referencia: intento.referencia_externa },
-      });
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "No pudimos iniciar el pago.");
+    } catch {
+      toast.error("No pudimos registrar el pago. Probá de nuevo.");
     } finally {
       setPagando(false);
     }
@@ -156,7 +149,7 @@ function Expensas() {
         ))}
       </Accordion>
 
-      <PieDemo texto="Pagos en entorno de prueba (sandbox). Cada consorcio conecta su propia cuenta de Mercado Pago." />
+      <PieDemo texto="Los pagos son simulados. Cada consorcio conectará su propia cuenta de Mercado Pago en la fase de integraciones." />
 
       <Dialog open={!!aPagar} onOpenChange={(o) => !o && setAPagar(null)}>
         <DialogContent>
@@ -172,8 +165,7 @@ function Expensas() {
               <Landmark className="h-4 w-4 text-accent" /> Mercado Pago del consorcio
             </p>
             <p className="text-xs text-muted-foreground">
-              Entorno de prueba: te llevamos al checkout y la boleta se acredita cuando
-              llega la notificación del pago.
+              Prototipo: no se genera ningún cobro real.
             </p>
           </div>
           <DialogFooter>
@@ -185,7 +177,7 @@ function Expensas() {
               disabled={pagando}
               className="bg-accent text-accent-foreground hover:bg-accent/90"
             >
-              {pagando ? "Abriendo checkout…" : "Ir a pagar"}
+              {pagando ? "Procesando…" : "Confirmar pago"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,13 +1,15 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
+  Bell,
   Building2,
+  CalendarDays,
   FileText,
   LayoutDashboard,
-  Megaphone,
   MessagesSquare,
   Receipt,
   Users,
+  Vote,
   Wrench,
 } from "lucide-react";
 
@@ -15,20 +17,17 @@ import { Isotipo, Logotipo, BadgeDemo } from "@/components/heyvo/marca";
 import { SelectorPerfil } from "@/components/heyvo/selector-perfil";
 import { cn } from "@/lib/utils";
 
-type Item = {
-  to: NonNullable<LinkProps["to"]>;
-  label: string;
-  icon: typeof Users;
-  exact?: boolean;
-};
+type Item = { to: NonNullable<LinkProps["to"]>; label: string; icon: typeof Users; exact?: boolean };
 
 const items: Item[] = [
   { to: "/admin", label: "Panel", icon: LayoutDashboard, exact: true },
   { to: "/admin/reclamos", label: "Reclamos", icon: Wrench },
   { to: "/admin/expensas", label: "Cobranzas", icon: Receipt },
-  { to: "/admin/avisos", label: "Avisos", icon: Megaphone },
-  { to: "/admin/documentos", label: "Documentos", icon: FileText },
   { to: "/admin/conversaciones", label: "Conversaciones", icon: MessagesSquare },
+  { to: "/admin/avisos", label: "Avisos", icon: Bell },
+  { to: "/admin/documentos", label: "Documentos", icon: FileText },
+  { to: "/admin/amenities", label: "Espacios", icon: CalendarDays },
+  { to: "/admin/asambleas", label: "Asambleas", icon: Vote },
   { to: "/admin/proveedores", label: "Proveedores", icon: Building2 },
   { to: "/admin/personas", label: "Padrón", icon: Users },
 ];

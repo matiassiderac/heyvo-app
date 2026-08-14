@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/heyvo/admin-shell";
@@ -13,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatARS, formatFecha, personas } from "@/data/demo";
+import { formatARS, formatFecha } from "@/data/demo";
 import { useDemo } from "@/lib/demo-session";
 
 export const Route = createFileRoute("/_authenticated/admin/expensas")({
@@ -36,9 +37,29 @@ export const Route = createFileRoute("/_authenticated/admin/expensas")({
 });
 
 function AdminExpensas() {
-  const { boletas } = useDemo();
+  const { boletas, personas, registrarRecordatorio } = useDemo();
   const total = boletas.reduce((a, b) => a + b.total, 0);
   const cobrado = boletas.filter((b) => b.estado === "paga").reduce((a, b) => a + b.total, 0);
+
+  const deudaPorUnidad = useMemo(() => {
+    const mapa = new Map<string, number>();
+    for (const b of boletas) {
+      if (b.estado === "paga" || !b.unidadEtiqueta) continue;
+      mapa.set(
+        b.unidadEtiqueta,
+        (mapa.get(b.unidadEtiqueta) ?? 0) + b.total + (b.interes ?? 0),
+      );
+    }
+    return mapa;
+  }, [boletas]);
+
+  const residentesConUnidad = personas.filter((p) => p.unidadEtiqueta);
+
+  const recordar = (boletaId: string, periodo: string) => {
+    void registrarRecordatorio(boletaId)
+      .then(() => toast.success(`Recordatorio registrado para ${periodo}.`))
+      .catch(() => toast.error("No pudimos registrar el recordatorio."));
+  };
 
   return (
     <AdminShell titulo="Cobranzas" subtitulo="Liquidaciones y estado de pago.">
@@ -97,15 +118,15 @@ function AdminExpensas() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() =>
-                          toast.success(`Recordatorio enviado para ${b.periodo}.`)
-                        }
-                      >
-                        Recordar
-                      </Button>
+                      {b.estado !== "paga" && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => recordar(b.id, b.periodo)}
+                        >
+                          Recordar
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -119,24 +140,27 @@ function AdminExpensas() {
         <CardContent className="p-4">
           <h2 className="mb-3 text-sm font-semibold">Deuda por unidad</h2>
           <div className="space-y-2">
-            {personas
-              .filter((p) => p.unidad !== "—")
-              .map((p, i) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border p-3"
-                >
-                  <div>
-                    <p className="text-sm font-medium">
-                      {p.unidad} · {p.nombre}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{p.email}</p>
-                  </div>
-                  <span className="text-sm font-semibold">
-                    {formatARS(i === 0 ? 285400 : i === 1 ? 0 : 132900)}
-                  </span>
+            {residentesConUnidad.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-border p-3"
+              >
+                <div>
+                  <p className="text-sm font-medium">
+                    {p.unidadEtiqueta} · {p.nombre}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{p.email}</p>
                 </div>
-              ))}
+                <span className="text-sm font-semibold">
+                  {formatARS(deudaPorUnidad.get(p.unidadEtiqueta!) ?? 0)}
+                </span>
+              </div>
+            ))}
+            {residentesConUnidad.length === 0 && (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Todavía no hay residentes vinculados a una unidad.
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

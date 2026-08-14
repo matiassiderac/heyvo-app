@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Building2, LogOut, ShieldCheck, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 import { AppShell, PieDemo } from "@/components/heyvo/app-shell";
 import { Button } from "@/components/ui/button";
@@ -8,16 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { roles } from "@/data/demo";
 import { useDemo } from "@/lib/demo-session";
-import { usePrefsNotificacion, type PrefsNotificacion } from "@/lib/notificaciones";
-import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
-
-const opcionesNotificacion: { id: keyof PrefsNotificacion; label: string }[] = [
-  { id: "avisos", label: "Avisos del consorcio" },
-  { id: "vencimientos", label: "Vencimiento de expensas" },
-  { id: "reclamos", label: "Novedades de mis reclamos" },
-  { id: "asambleas", label: "Convocatorias a asamblea" },
-];
 
 export const Route = createFileRoute("/_authenticated/app/perfil")({
   head: () => ({
@@ -39,8 +31,7 @@ export const Route = createFileRoute("/_authenticated/app/perfil")({
 });
 
 function Perfil() {
-  const { rol, sesion, salir } = useDemo();
-  const { prefs, cargando: cargandoPrefs, guardar, guardando } = usePrefsNotificacion();
+  const { rol, sesion, salir, notificacionPrefs, actualizarNotificacionPrefs } = useDemo();
   const navigate = useNavigate();
   const nombreRol = roles.find((r) => r.id === rol)?.nombre ?? "Residente";
 
@@ -70,30 +61,29 @@ function Perfil() {
       <h2 className="mb-2 mt-5 text-sm font-semibold">Notificaciones</h2>
       <Card>
         <CardContent className="space-y-4 p-4">
-          {cargandoPrefs && (
-            <p className="text-sm text-muted-foreground">Buscando tus preferencias…</p>
-          )}
-          {opcionesNotificacion.map((n) => (
+          {(
+            [
+              { id: "avisos", label: "Avisos del consorcio" },
+              { id: "vencimientos", label: "Vencimiento de expensas" },
+              { id: "reclamos", label: "Novedades de mis reclamos" },
+              { id: "asambleas", label: "Convocatorias a asamblea" },
+            ] as const
+          ).map((n) => (
             <div key={n.id} className="flex items-center justify-between gap-3">
               <Label htmlFor={n.id} className="text-sm font-normal">
                 {n.label}
               </Label>
               <Switch
                 id={n.id}
-                checked={prefs[n.id]}
-                disabled={cargandoPrefs || guardando}
-                onCheckedChange={(valor) => {
-                  void guardar({ ...prefs, [n.id]: valor })
-                    .then(() => toast.success("Preferencia guardada."))
-                    .catch(() => toast.error("No pudimos guardar la preferencia."));
+                checked={notificacionPrefs[n.id]}
+                onCheckedChange={(checked) => {
+                  void actualizarNotificacionPrefs({ [n.id]: checked }).catch(() =>
+                    toast.error("No pudimos guardar la preferencia."),
+                  );
                 }}
               />
             </div>
           ))}
-          <p className="text-xs text-muted-foreground">
-            Guardamos tus preferencias en tu cuenta. Los envíos por email y WhatsApp todavía no
-            están conectados en esta etapa.
-          </p>
         </CardContent>
       </Card>
 

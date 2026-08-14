@@ -13,12 +13,6 @@ import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
-  validateSearch: (s: Record<string, unknown>): { next?: string } => {
-    const valor = s['next'];
-    return typeof valor === "string" && valor.startsWith("/") && !valor.startsWith("//")
-      ? { next: valor }
-      : {};
-  },
   head: () => ({
     meta: [
       { title: "Ingresar o crear tu cuenta — HEYVO" },
@@ -39,15 +33,6 @@ export const Route = createFileRoute("/auth")({
 
 function Autenticacion() {
   const navigate = useNavigate();
-  const { next } = Route.useSearch();
-  const destino = next ?? "/app";
-  const irAlDestino = () => {
-    if (next) {
-      window.location.href = next;
-      return;
-    }
-    void navigate({ to: "/app", replace: true });
-  };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nombre, setNombre] = useState("");
@@ -55,10 +40,9 @@ function Autenticacion() {
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) irAlDestino();
+      if (data.session) void navigate({ to: "/app", replace: true });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate, next]);
+  }, [navigate]);
 
   const ingresar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +53,7 @@ function Autenticacion() {
       toast.error("No pudimos entrar con esos datos. Revisá el correo y la contraseña.");
       return;
     }
-    irAlDestino();
+    void navigate({ to: "/app", replace: true });
   };
 
   const registrarse = async (e: React.FormEvent) => {
@@ -79,7 +63,7 @@ function Autenticacion() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}${destino}`,
+        emailRedirectTo: window.location.origin,
         data: { full_name: nombre },
       },
     });
@@ -93,13 +77,13 @@ function Autenticacion() {
       return;
     }
     toast.success("Listo, tu cuenta quedó creada.");
-    irAlDestino();
+    void navigate({ to: "/app", replace: true });
   };
 
   const conGoogle = async () => {
     setCargando(true);
     const resultado = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}${destino}`,
+      redirect_uri: window.location.origin,
     });
     if (resultado.error) {
       setCargando(false);
@@ -107,7 +91,7 @@ function Autenticacion() {
       return;
     }
     if (resultado.redirected) return;
-    irAlDestino();
+    void navigate({ to: "/app", replace: true });
   };
 
   return (

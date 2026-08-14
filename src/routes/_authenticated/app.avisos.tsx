@@ -35,20 +35,22 @@ const iconos = {
 function Avisos() {
   const { avisos, cargandoAvisos, marcarAvisoLeido } = useDemo();
 
+  if (cargandoAvisos) {
+    return (
+      <AppShell titulo="Avisos" subtitulo="Novedades de tu edificio.">
+        <p className="py-8 text-center text-sm text-muted-foreground">Cargando avisos…</p>
+        <PieDemo />
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell titulo="Avisos" subtitulo="Novedades de tu edificio.">
       <div className="space-y-3">
-        {cargandoAvisos && (
+        {avisos.length === 0 && (
           <Card>
             <CardContent className="p-4 text-sm text-muted-foreground">
-              Buscando novedades…
-            </CardContent>
-          </Card>
-        )}
-        {!cargandoAvisos && avisos.length === 0 && (
-          <Card>
-            <CardContent className="p-4 text-sm text-muted-foreground">
-              Por ahora no hay avisos publicados.
+              Todavía no hay avisos publicados.
             </CardContent>
           </Card>
         )}
@@ -58,7 +60,8 @@ function Avisos() {
             <Card
               key={a.id}
               onClick={() => {
-                if (!a.leido) void marcarAvisoLeido(a.id);
+                if (a.leido) return;
+                void marcarAvisoLeido(a.id).catch(() => undefined);
               }}
               className={cn(
                 "cursor-pointer transition-colors",
@@ -86,4 +89,3 @@ function Avisos() {
     </AppShell>
   );
 }
-

@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { MessageSquareText } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/heyvo/admin-shell";
@@ -9,14 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -35,10 +25,8 @@ import {
 import {
   etiquetasEstadoTicket,
   formatFecha,
-  type EstadoTicket,
   type PrioridadTicket,
 } from "@/data/demo";
-import { supabase } from "@/integrations/supabase/client";
 import { useDemo } from "@/lib/demo-session";
 
 export const Route = createFileRoute("/_authenticated/admin/reclamos")({
@@ -61,89 +49,9 @@ export const Route = createFileRoute("/_authenticated/admin/reclamos")({
 });
 
 function AdminReclamos() {
-  const { tickets, sesion } = useDemo();
-  const queryClient = useQueryClient();
+  const { tickets, proveedores, asignarProveedor } = useDemo();
   const [busqueda, setBusqueda] = useState("");
   const [prioridad, setPrioridad] = useState<PrioridadTicket | "todas">("todas");
-  const [detalleId, setDetalleId] = useState<string | null>(null);
-  const [comentario, setComentario] = useState("");
-  const [guardando, setGuardando] = useState(false);
-
-  const proveedoresQuery = useQuery({
-    queryKey: ["heyvo", "proveedores-admin", sesion?.userId],
-    enabled: !!sesion?.esAdmin,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("proveedores")
-        .select("id, nombre, consorcio_id")
-        .eq("activo", true)
-        .order("nombre");
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
-  const refrescarTickets = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["heyvo", "tickets"] });
-  };
-
-  const registrarEvento = async (ticketId: string, texto: string) => {
-    const { error } = await supabase.from("ticket_eventos").insert({
-      ticket_id: ticketId,
-      autor: sesion?.userId ?? null,
-      texto,
-    });
-    if (error) throw error;
-  };
-
-  const asignar = async (ticketId: string, proveedorId: string) => {
-    const proveedor = proveedoresQuery.data?.find((p) => p.id === proveedorId);
-    setGuardando(true);
-    try {
-      const { error } = await supabase
-        .from("tickets")
-        .update({ proveedor_id: proveedorId, estado: "asignado" })
-        .eq("id", ticketId);
-      if (error) throw error;
-      await registrarEvento(ticketId, `Se asignó a ${proveedor?.nombre ?? "un proveedor"}.`);
-      await refrescarTickets();
-      toast.success(`Reclamo asignado a ${proveedor?.nombre ?? "proveedor"}.`);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "No pudimos asignar el reclamo.");
-    } finally {
-      setGuardando(false);
-    }
-  };
-
-  const cambiarEstado = async (ticketId: string, estado: EstadoTicket) => {
-    setGuardando(true);
-    try {
-      const { error } = await supabase.from("tickets").update({ estado }).eq("id", ticketId);
-      if (error) throw error;
-      await registrarEvento(ticketId, `Estado actualizado a ${etiquetasEstadoTicket[estado]}.`);
-      await refrescarTickets();
-      toast.success(`Estado actualizado a ${etiquetasEstadoTicket[estado]}.`);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "No pudimos actualizar el estado.");
-    } finally {
-      setGuardando(false);
-    }
-  };
-
-  const agregarComentario = async () => {
-    if (!detalleId || !comentario.trim()) return;
-    setGuardando(true);
-    try {
-      await registrarEvento(detalleId, comentario.trim());
-      setComentario("");
-      await refrescarTickets();
-      toast.success("Comentario agregado al historial.");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "No pudimos guardar el comentario.");
-    } finally {
-      setGuardando(false);
-    }
-  };
 
   const filtrados = tickets.filter((t) => {
     const coincide = `${t.id} ${t.titulo} ${t.unidad} ${t.categoria}`
@@ -151,17 +59,6 @@ function AdminReclamos() {
       .includes(busqueda.toLowerCase());
     return coincide && (prioridad === "todas" || t.prioridad === prioridad);
   });
-  const detalle = tickets.find((t) => t.uuid === detalleId) ?? null;
-  const estados: EstadoTicket[] = [
-    "nuevo",
-    "validando",
-    "asignado",
-    "en_curso",
-    "esperando_tercero",
-    "resuelto",
-    "cerrado",
-    "reabierto",
-  ];
 
   return (
     <AdminShell titulo="Reclamos" subtitulo="Bandeja operativa de todos los consorcios.">
@@ -227,34 +124,29 @@ function AdminReclamos() {
                       {t.asignadoA ?? "Sin asignar"}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
                       <Select
-                        value={t.proveedorId ?? ""}
-                        disabled={guardando}
-                        onValueChange={(v) => void asignar(t.uuid, v)}
+                        value={t.proveedorId ?? undefined}
+                        onValueChange={(v) => {
+                          const proveedor = proveedores.find((p) => p.id === v);
+                          if (!proveedor) return;
+                          void asignarProveedor(t.uuid, proveedor.id, proveedor.nombre)
+                            .then(() =>
+                              toast.success(`${t.id} asignado a ${proveedor.nombre}.`),
+                            )
+                            .catch(() => toast.error("No pudimos asignar el proveedor."));
+                        }}
                       >
                         <SelectTrigger className="ml-auto w-40">
                           <SelectValue placeholder="Asignar" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(proveedoresQuery.data ?? [])
-                            .filter((p) => p.consorcio_id === t.consorcioId)
-                            .map((p) => (
+                          {proveedores.map((p) => (
                             <SelectItem key={p.id} value={p.id}>
                               {p.nombre}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        aria-label={`Gestionar ${t.id}`}
-                        onClick={() => setDetalleId(t.uuid)}
-                      >
-                        <MessageSquareText className="h-4 w-4" />
-                      </Button>
-                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -268,94 +160,16 @@ function AdminReclamos() {
             </p>
           )}
 
+          <div className="mt-4 flex justify-end">
+            <Button
+              variant="outline"
+              onClick={() => toast.info("Exportación simulada en el prototipo.")}
+            >
+              Exportar
+            </Button>
+          </div>
         </CardContent>
       </Card>
-
-      <Dialog open={!!detalle} onOpenChange={(open) => !open && setDetalleId(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-          {detalle && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{detalle.titulo}</DialogTitle>
-                <DialogDescription>
-                  {detalle.id} · {detalle.consorcioNombre ?? "Consorcio"} · {detalle.unidad}
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <span className="text-sm font-medium">Estado</span>
-                  <Select
-                    value={detalle.estado}
-                    disabled={guardando}
-                    onValueChange={(v) => void cambiarEstado(detalle.uuid, v as EstadoTicket)}
-                  >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {estados.map((estado) => (
-                        <SelectItem key={estado} value={estado}>
-                          {etiquetasEstadoTicket[estado]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <span className="text-sm font-medium">Responsable</span>
-                  <Select
-                    value={detalle.proveedorId ?? ""}
-                    disabled={guardando}
-                    onValueChange={(v) => void asignar(detalle.uuid, v)}
-                  >
-                    <SelectTrigger><SelectValue placeholder="Sin asignar" /></SelectTrigger>
-                    <SelectContent>
-                      {(proveedoresQuery.data ?? [])
-                        .filter((p) => p.consorcio_id === detalle.consorcioId)
-                        .map((p) => (
-                          <SelectItem key={p.id} value={p.id}>{p.nombre}</SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium">Detalle</p>
-                <p className="mt-1 text-sm text-muted-foreground">{detalle.descripcion}</p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-sm font-medium">Historial completo</p>
-                <ol className="space-y-3 border-l border-border pl-4">
-                  {detalle.historial.map((evento) => (
-                    <li key={`${evento.fecha}-${evento.texto}`} className="text-sm">
-                      <span className="block text-xs text-muted-foreground">
-                        {formatFecha(evento.fecha)}
-                      </span>
-                      {evento.texto}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              <div className="space-y-2">
-                <Textarea
-                  value={comentario}
-                  onChange={(e) => setComentario(e.target.value)}
-                  placeholder="Agregar comentario o comunicación al residente"
-                  rows={3}
-                />
-                <Button
-                  disabled={guardando || !comentario.trim()}
-                  onClick={() => void agregarComentario()}
-                >
-                  Agregar al historial
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </AdminShell>
   );
 }

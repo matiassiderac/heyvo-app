@@ -3,10 +3,14 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, tool, stepCountIs, type UIMessage } from "ai";
 import { z } from "zod";
 import {
+  amenities,
+  boletas,
   contactos,
   documentos,
   faqs,
+  avisos,
   slaHoras,
+  tickets,
   tiposCertificado,
   formatARS,
 } from "@/data/demo";
@@ -28,49 +32,12 @@ function createRunIdFetch(initialRunId?: string) {
   };
 }
 
-type BoletaCtx = {
-  id: string;
-  periodo: string;
-  estado: string;
-  vencimiento: string;
-  total: number;
-  interes?: number;
-  detalle?: { concepto: string; monto: number }[];
-};
-type TicketCtx = {
-  id: string;
-  titulo: string;
-  estado: string;
-  prioridad: string;
-  categoria: string;
-  unidad: string;
-  vence: string;
-  historial?: { fecha: string; texto: string }[];
-};
-type AmenityCtx = {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  capacidad: number;
-  reglas: string[];
-  franjas: string[];
-  requiereDeposito: number | null;
-};
-type AvisoCtx = { id: string; titulo: string; cuerpo: string; tipo: string; fecha: string };
-
 type Contexto = {
   rol?: string;
   unidad?: string;
   consorcio?: string;
   saldo?: number;
   ticketsAbiertos?: number;
-  /** Datos reales de la sesión (leídos con las políticas de la base del lado del cliente). */
-  datos?: {
-    boletas?: BoletaCtx[];
-    tickets?: TicketCtx[];
-    amenities?: AmenityCtx[];
-    avisos?: AvisoCtx[];
-  };
 };
 
 const sistema = (ctx: Contexto) => `
@@ -107,8 +74,6 @@ Límites:
 - Un inquilino no puede pedir certificados reservados al propietario: explicalo con
   claridad, sin dar datos de otras personas ni de otras unidades.
 - Solo ves la unidad de esta sesión.
-- Si la persona pide hablar con alguien del equipo, o el tema necesita una decisión de la
-  administración, usá "derivar_a_persona" y contale que ya quedó en la bandeja.
 - Si el tema no es del consorcio, decilo y ofrecé derivar a la administración.
 - Estás en un prototipo: los pagos, los envíos y las integraciones son simulados.
 
@@ -157,7 +122,6 @@ export const Route = createFileRoute("/api/chat")({
                 .describe("Período puntual, por ejemplo 'Julio 2026'. Null para todas."),
             }),
             execute: async ({ periodo }) => {
-              const boletas = body.contexto?.datos?.boletas ?? [];
               const lista = periodo
                 ? boletas.filter((b) =>
                     b.periodo.toLowerCase().includes(periodo.toLowerCase()),
@@ -184,7 +148,6 @@ export const Route = createFileRoute("/api/chat")({
                 .describe("Número de ticket, por ejemplo TK-1042. Null para listar."),
             }),
             execute: async ({ ticketId }) => {
-              const tickets = body.contexto?.datos?.tickets ?? [];
               const lista = ticketId
                 ? tickets.filter(
                     (t) => t.id.toLowerCase() === ticketId.toLowerCase().trim(),
@@ -200,7 +163,8 @@ export const Route = createFileRoute("/api/chat")({
                   categoria: t.categoria,
                   unidad: t.unidad,
                   vence: t.vence,
-                  historial: t.historial ?? [],
+                  asignadoA: t.asignadoA ?? null,
+                  historial: t.historial,
                 })),
               };
             },
@@ -211,10 +175,8 @@ export const Route = createFileRoute("/api/chat")({
             inputSchema: z.object({
               amenityId: z.string().nullable().describe("Id del espacio o null para todos."),
             }),
-            execute: async ({ amenityId }) => {
-              const amenities = body.contexto?.datos?.amenities ?? [];
-              return amenityId ? amenities.filter((a) => a.id === amenityId) : amenities;
-            },
+            execute: async ({ amenityId }) =>
+              amenityId ? amenities.filter((a) => a.id === amenityId) : amenities,
           }),
           buscar_avisos_y_documentos: tool({
             description:
@@ -223,7 +185,6 @@ export const Route = createFileRoute("/api/chat")({
               consulta: z.string().describe("Texto libre a buscar."),
             }),
             execute: async ({ consulta }) => {
-              const avisos = body.contexto?.datos?.avisos ?? [];
               const q = consulta.toLowerCase();
               const coincide = (texto: string) =>
                 texto.toLowerCase().includes(q) || q.length < 3;
@@ -282,16 +243,6 @@ export const Route = createFileRoute("/api/chat")({
               }[tipo],
               telefonos: contactos.filter((c) => c.urgente),
             }),
-          }),
-          derivar_a_persona: tool({
-            description:
-              "Deriva la conversación a una persona de la administración. Usalo cuando el tema excede lo que podés resolver, cuando la persona lo pide explícitamente o cuando hay un reclamo sensible. Después de usarlo, avisale que ya quedó en la bandeja del equipo.",
-            inputSchema: z.object({
-              motivo: z
-                .string()
-                .describe("Una línea con el tema a resolver, para que el equipo lo vea en la bandeja."),
-            }),
-            execute: async ({ motivo }) => ({ derivado: true, motivo }),
           }),
           proponer_accion: tool({
             description:

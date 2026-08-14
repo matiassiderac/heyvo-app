@@ -50,7 +50,6 @@ const atajos = [
 
 function Inicio() {
   const { boletas, tickets, reservas, avisos, asambleas, sesion } = useDemo();
-
   const pendientes = boletas.filter((b) => b.estado !== "paga");
   const saldo = pendientes.reduce((acc, b) => acc + b.total + (b.interes ?? 0), 0);
   const abiertos = tickets.filter(
@@ -58,10 +57,7 @@ function Inicio() {
       !["cerrado", "resuelto"].includes(t.estado) &&
       (!sesion?.unidadEtiqueta || t.unidad === sesion.unidadEtiqueta),
   );
-  const proxima = reservas.find(
-    (r) =>
-      r.estado === "confirmada" && (!sesion?.unidadId || r.unidadId === sesion.unidadId),
-  );
+  const proxima = reservas.find((r) => r.estado === "confirmada");
   const avisoNuevo = avisos.find((a) => !a.leido);
   const asamblea = asambleas.find((a) => a.estado === "convocada");
 
