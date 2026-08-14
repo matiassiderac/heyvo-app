@@ -33,17 +33,36 @@ const iconos = {
 } as const;
 
 function Avisos() {
-  const { avisos, marcarAvisoLeido } = useDemo();
+  const { avisos, cargandoAvisos, marcarAvisoLeido } = useDemo();
+
+  if (cargandoAvisos) {
+    return (
+      <AppShell titulo="Avisos" subtitulo="Novedades de tu edificio.">
+        <p className="py-8 text-center text-sm text-muted-foreground">Cargando avisos…</p>
+        <PieDemo />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell titulo="Avisos" subtitulo="Novedades de tu edificio.">
       <div className="space-y-3">
+        {avisos.length === 0 && (
+          <Card>
+            <CardContent className="p-4 text-sm text-muted-foreground">
+              Todavía no hay avisos publicados.
+            </CardContent>
+          </Card>
+        )}
         {avisos.map((a) => {
           const Icon = iconos[a.tipo];
           return (
             <Card
               key={a.id}
-              onClick={() => marcarAvisoLeido(a.id)}
+              onClick={() => {
+                if (a.leido) return;
+                void marcarAvisoLeido(a.id).catch(() => undefined);
+              }}
               className={cn(
                 "cursor-pointer transition-colors",
                 !a.leido && "border-accent/40 bg-accent/5",

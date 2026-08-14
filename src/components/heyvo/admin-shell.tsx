@@ -1,11 +1,15 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
+  Bell,
   Building2,
+  CalendarDays,
+  FileText,
   LayoutDashboard,
   MessagesSquare,
   Receipt,
   Users,
+  Vote,
   Wrench,
 } from "lucide-react";
 
@@ -20,6 +24,10 @@ const items: Item[] = [
   { to: "/admin/reclamos", label: "Reclamos", icon: Wrench },
   { to: "/admin/expensas", label: "Cobranzas", icon: Receipt },
   { to: "/admin/conversaciones", label: "Conversaciones", icon: MessagesSquare },
+  { to: "/admin/avisos", label: "Avisos", icon: Bell },
+  { to: "/admin/documentos", label: "Documentos", icon: FileText },
+  { to: "/admin/amenities", label: "Espacios", icon: CalendarDays },
+  { to: "/admin/asambleas", label: "Asambleas", icon: Vote },
   { to: "/admin/proveedores", label: "Proveedores", icon: Building2 },
   { to: "/admin/personas", label: "Padrón", icon: Users },
 ];

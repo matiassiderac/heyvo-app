@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Building2, LogOut, ShieldCheck, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 import { AppShell, PieDemo } from "@/components/heyvo/app-shell";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/_authenticated/app/perfil")({
 });
 
 function Perfil() {
-  const { rol, sesion, salir } = useDemo();
+  const { rol, sesion, salir, notificacionPrefs, actualizarNotificacionPrefs } = useDemo();
   const navigate = useNavigate();
   const nombreRol = roles.find((r) => r.id === rol)?.nombre ?? "Residente";
 
@@ -60,17 +61,27 @@ function Perfil() {
       <h2 className="mb-2 mt-5 text-sm font-semibold">Notificaciones</h2>
       <Card>
         <CardContent className="space-y-4 p-4">
-          {[
-            { id: "n1", label: "Avisos del consorcio", def: true },
-            { id: "n2", label: "Vencimiento de expensas", def: true },
-            { id: "n3", label: "Novedades de mis reclamos", def: true },
-            { id: "n4", label: "Convocatorias a asamblea", def: false },
-          ].map((n) => (
+          {(
+            [
+              { id: "avisos", label: "Avisos del consorcio" },
+              { id: "vencimientos", label: "Vencimiento de expensas" },
+              { id: "reclamos", label: "Novedades de mis reclamos" },
+              { id: "asambleas", label: "Convocatorias a asamblea" },
+            ] as const
+          ).map((n) => (
             <div key={n.id} className="flex items-center justify-between gap-3">
               <Label htmlFor={n.id} className="text-sm font-normal">
                 {n.label}
               </Label>
-              <Switch id={n.id} defaultChecked={n.def} />
+              <Switch
+                id={n.id}
+                checked={notificacionPrefs[n.id]}
+                onCheckedChange={(checked) => {
+                  void actualizarNotificacionPrefs({ [n.id]: checked }).catch(() =>
+                    toast.error("No pudimos guardar la preferencia."),
+                  );
+                }}
+              />
             </div>
           ))}
         </CardContent>

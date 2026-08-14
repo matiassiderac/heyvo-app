@@ -9,7 +9,7 @@ import { Isotipo } from "@/components/heyvo/marca";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { amenities, tiposCertificado } from "@/data/demo";
+import { tiposCertificado } from "@/data/demo";
 import { useDemo } from "@/lib/demo-session";
 import { cn } from "@/lib/utils";
 
@@ -119,33 +119,37 @@ export function AsistenteChat() {
         }
         case "reservar_espacio": {
           const amenity =
-            amenities.find((a) => a.id === d["amenityId"]) ??
-            amenities.find((a) =>
+            demo.amenities.find((a) => a.id === d["amenityId"]) ??
+            demo.amenities.find((a) =>
               (d["amenityId"] ?? "").toLowerCase().includes(a.nombre.toLowerCase()),
             ) ??
-            amenities[0]!;
-          const r = demo.crearReserva({
+            demo.amenities[0];
+          if (!amenity) {
+            toast.error("Todavía no hay espacios comunes cargados en tu consorcio.");
+            break;
+          }
+          await demo.crearReserva({
             amenityId: amenity.id,
             fecha: d["fecha"] || new Date().toISOString().slice(0, 10),
-            franja: d["franja"] || amenity.franjas[0]!,
+            franja: d["franja"] || amenity.franjas[0] || "",
           });
-          toast.success(`Reserva ${r.id} confirmada en ${amenity.nombre}.`);
+          toast.success(`Reserva confirmada en ${amenity.nombre}.`);
           break;
         }
         case "pedir_certificado": {
           const tipo =
             tiposCertificado.find((t) => t.id === d["certificadoId"]) ?? tiposCertificado[1]!;
-          demo.pedirCertificado(tipo.id, tipo.nombre);
+          await demo.pedirCertificado(tipo.id, tipo.nombre);
           toast.success(`Pedimos tu ${tipo.nombre.toLowerCase()}. Demora ${tipo.demora}.`);
           break;
         }
         case "registrar_mudanza": {
-          const m = demo.pedirMudanza({
+          const m = await demo.pedirMudanza({
             tipo: (d["tipoMudanza"] as "mudanza" | "flete" | "obra") || "mudanza",
             fecha: d["fecha"] || new Date().toISOString().slice(0, 10),
             franja: d["franja"] || "09:00 a 12:00",
           });
-          toast.success(`Turno ${m.id} aprobado. Tu código es ${m.codigo}.`);
+          toast.success(`Turno aprobado. Tu código es ${m.codigo ?? "—"}.`);
           break;
         }
         case "pagar_expensas": {

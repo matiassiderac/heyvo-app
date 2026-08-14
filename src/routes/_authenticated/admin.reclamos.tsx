@@ -25,7 +25,6 @@ import {
 import {
   etiquetasEstadoTicket,
   formatFecha,
-  proveedores,
   type PrioridadTicket,
 } from "@/data/demo";
 import { useDemo } from "@/lib/demo-session";
@@ -50,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/admin/reclamos")({
 });
 
 function AdminReclamos() {
-  const { tickets } = useDemo();
+  const { tickets, proveedores, asignarProveedor } = useDemo();
   const [busqueda, setBusqueda] = useState("");
   const [prioridad, setPrioridad] = useState<PrioridadTicket | "todas">("todas");
 
@@ -126,16 +125,23 @@ function AdminReclamos() {
                     </TableCell>
                     <TableCell className="text-right">
                       <Select
-                        onValueChange={(v) =>
-                          toast.success(`${t.id} asignado a ${v}. Le avisamos al vecino.`)
-                        }
+                        value={t.proveedorId ?? undefined}
+                        onValueChange={(v) => {
+                          const proveedor = proveedores.find((p) => p.id === v);
+                          if (!proveedor) return;
+                          void asignarProveedor(t.uuid, proveedor.id, proveedor.nombre)
+                            .then(() =>
+                              toast.success(`${t.id} asignado a ${proveedor.nombre}.`),
+                            )
+                            .catch(() => toast.error("No pudimos asignar el proveedor."));
+                        }}
                       >
                         <SelectTrigger className="ml-auto w-40">
                           <SelectValue placeholder="Asignar" />
                         </SelectTrigger>
                         <SelectContent>
                           {proveedores.map((p) => (
-                            <SelectItem key={p.id} value={p.nombre}>
+                            <SelectItem key={p.id} value={p.id}>
                               {p.nombre}
                             </SelectItem>
                           ))}

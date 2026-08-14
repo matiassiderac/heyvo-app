@@ -6,7 +6,7 @@ import { AppShell, PieDemo } from "@/components/heyvo/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { asambleas, formatFecha } from "@/data/demo";
+import { formatFecha } from "@/data/demo";
 import { useDemo } from "@/lib/demo-session";
 import { cn } from "@/lib/utils";
 
@@ -30,11 +30,26 @@ export const Route = createFileRoute("/_authenticated/app/asambleas")({
 });
 
 function Asambleas() {
-  const { votos, votar } = useDemo();
+  const { asambleas, cargandoAsambleas, votar } = useDemo();
+
+  if (cargandoAsambleas) {
+    return (
+      <AppShell titulo="Asambleas" subtitulo="Participá aunque no puedas ir.">
+        <p className="py-8 text-center text-sm text-muted-foreground">Cargando asambleas…</p>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell titulo="Asambleas" subtitulo="Participá aunque no puedas ir.">
       <div className="space-y-4">
+        {asambleas.length === 0 && (
+          <Card>
+            <CardContent className="p-4 text-sm text-muted-foreground">
+              Todavía no hay asambleas convocadas.
+            </CardContent>
+          </Card>
+        )}
         {asambleas.map((a) => (
           <Card key={a.id}>
             <CardContent className="p-4">
@@ -71,7 +86,7 @@ function Asambleas() {
               </ul>
 
               {a.votaciones.map((v) => {
-                const miVoto = votos[v.id] ?? v.votoEmitido;
+                const miVoto = v.votoEmitido;
                 return (
                   <div key={v.id} className="mt-4 rounded-xl border border-border p-3">
                     <p className="text-sm font-medium">{v.tema}</p>
@@ -103,8 +118,9 @@ function Asambleas() {
                               miVoto === o && "bg-accent text-accent-foreground hover:bg-accent/90",
                             )}
                             onClick={() => {
-                              votar(v.id, o);
-                              toast.success(`Voto registrado: ${o}.`);
+                              void votar(v.id, o)
+                                .then(() => toast.success(`Voto registrado: ${o}.`))
+                                .catch(() => toast.error("No pudimos registrar tu voto."));
                             }}
                           >
                             {o}

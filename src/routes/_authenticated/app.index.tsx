@@ -17,7 +17,7 @@ import { AppShell, PieDemo } from "@/components/heyvo/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { asambleas, formatARS, formatFecha } from "@/data/demo";
+import { formatARS, formatFecha } from "@/data/demo";
 import { useDemo } from "@/lib/demo-session";
 
 export const Route = createFileRoute("/_authenticated/app/")({
@@ -49,7 +49,7 @@ const atajos = [
 ] as const;
 
 function Inicio() {
-  const { boletas, tickets, reservas, avisos, sesion } = useDemo();
+  const { boletas, tickets, reservas, avisos, asambleas, sesion } = useDemo();
   const pendientes = boletas.filter((b) => b.estado !== "paga");
   const saldo = pendientes.reduce((acc, b) => acc + b.total + (b.interes ?? 0), 0);
   const abiertos = tickets.filter(

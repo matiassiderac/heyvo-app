@@ -14,6 +14,471 @@ export type Database = {
   }
   public: {
     Tables: {
+      amenities: {
+        Row: {
+          activo: boolean
+          capacidad: number
+          consorcio_id: string
+          created_at: string
+          descripcion: string | null
+          franjas: string[]
+          id: string
+          nombre: string
+          reglas: string[]
+          requiere_deposito: number | null
+        }
+        Insert: {
+          activo?: boolean
+          capacidad?: number
+          consorcio_id: string
+          created_at?: string
+          descripcion?: string | null
+          franjas?: string[]
+          id?: string
+          nombre: string
+          reglas?: string[]
+          requiere_deposito?: number | null
+        }
+        Update: {
+          activo?: boolean
+          capacidad?: number
+          consorcio_id?: string
+          created_at?: string
+          descripcion?: string | null
+          franjas?: string[]
+          id?: string
+          nombre?: string
+          reglas?: string[]
+          requiere_deposito?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "amenities_consorcio_id_fkey"
+            columns: ["consorcio_id"]
+            isOneToOne: false
+            referencedRelation: "consorcios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asambleas: {
+        Row: {
+          consorcio_id: string
+          created_at: string
+          estado: Database["public"]["Enums"]["estado_asamblea"]
+          fecha: string
+          id: string
+          modalidad: Database["public"]["Enums"]["modalidad_asamblea"]
+          temario: string[]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          consorcio_id: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_asamblea"]
+          fecha: string
+          id?: string
+          modalidad: Database["public"]["Enums"]["modalidad_asamblea"]
+          temario?: string[]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          consorcio_id?: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_asamblea"]
+          fecha?: string
+          id?: string
+          modalidad?: Database["public"]["Enums"]["modalidad_asamblea"]
+          temario?: string[]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asambleas_consorcio_id_fkey"
+            columns: ["consorcio_id"]
+            isOneToOne: false
+            referencedRelation: "consorcios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aviso_lecturas: {
+        Row: {
+          aviso_id: string
+          leido_at: string
+          user_id: string
+        }
+        Insert: {
+          aviso_id: string
+          leido_at?: string
+          user_id: string
+        }
+        Update: {
+          aviso_id?: string
+          leido_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aviso_lecturas_aviso_id_fkey"
+            columns: ["aviso_id"]
+            isOneToOne: false
+            referencedRelation: "avisos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      avisos: {
+        Row: {
+          consorcio_id: string
+          created_at: string
+          cuerpo: string
+          id: string
+          publicado_por: string | null
+          tipo: Database["public"]["Enums"]["tipo_aviso"]
+          titulo: string
+        }
+        Insert: {
+          consorcio_id: string
+          created_at?: string
+          cuerpo: string
+          id?: string
+          publicado_por?: string | null
+          tipo?: Database["public"]["Enums"]["tipo_aviso"]
+          titulo: string
+        }
+        Update: {
+          consorcio_id?: string
+          created_at?: string
+          cuerpo?: string
+          id?: string
+          publicado_por?: string | null
+          tipo?: Database["public"]["Enums"]["tipo_aviso"]
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avisos_consorcio_id_fkey"
+            columns: ["consorcio_id"]
+            isOneToOne: false
+            referencedRelation: "consorcios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mudanzas: {
+        Row: {
+          codigo: string | null
+          consorcio_id: string
+          created_at: string
+          estado: Database["public"]["Enums"]["estado_mudanza"]
+          fecha: string
+          franja: string
+          id: string
+          solicitado_por: string
+          tipo: Database["public"]["Enums"]["tipo_mudanza"]
+          unidad_id: string
+        }
+        Insert: {
+          codigo?: string | null
+          consorcio_id: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_mudanza"]
+          fecha: string
+          franja: string
+          id?: string
+          solicitado_por: string
+          tipo: Database["public"]["Enums"]["tipo_mudanza"]
+          unidad_id: string
+        }
+        Update: {
+          codigo?: string | null
+          consorcio_id?: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_mudanza"]
+          fecha?: string
+          franja?: string
+          id?: string
+          solicitado_por?: string
+          tipo?: Database["public"]["Enums"]["tipo_mudanza"]
+          unidad_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mudanzas_consorcio_id_fkey"
+            columns: ["consorcio_id"]
+            isOneToOne: false
+            referencedRelation: "consorcios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mudanzas_unidad_id_fkey"
+            columns: ["unidad_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reservas: {
+        Row: {
+          amenity_id: string
+          consorcio_id: string
+          created_at: string
+          creado_por: string
+          estado: Database["public"]["Enums"]["estado_reserva"]
+          fecha: string
+          franja: string
+          id: string
+          unidad_id: string
+        }
+        Insert: {
+          amenity_id: string
+          consorcio_id: string
+          created_at?: string
+          creado_por: string
+          estado?: Database["public"]["Enums"]["estado_reserva"]
+          fecha: string
+          franja: string
+          id?: string
+          unidad_id: string
+        }
+        Update: {
+          amenity_id?: string
+          consorcio_id?: string
+          created_at?: string
+          creado_por?: string
+          estado?: Database["public"]["Enums"]["estado_reserva"]
+          fecha?: string
+          franja?: string
+          id?: string
+          unidad_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservas_amenity_id_fkey"
+            columns: ["amenity_id"]
+            isOneToOne: false
+            referencedRelation: "amenities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservas_consorcio_id_fkey"
+            columns: ["consorcio_id"]
+            isOneToOne: false
+            referencedRelation: "consorcios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservas_unidad_id_fkey"
+            columns: ["unidad_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      votaciones: {
+        Row: {
+          asamblea_id: string
+          id: string
+          opciones: string[]
+          orden: number
+          tema: string
+        }
+        Insert: {
+          asamblea_id: string
+          id?: string
+          opciones: string[]
+          orden?: number
+          tema: string
+        }
+        Update: {
+          asamblea_id?: string
+          id?: string
+          opciones?: string[]
+          orden?: number
+          tema?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votaciones_asamblea_id_fkey"
+            columns: ["asamblea_id"]
+            isOneToOne: false
+            referencedRelation: "asambleas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      votos: {
+        Row: {
+          created_at: string
+          id: string
+          opcion: string
+          unidad_id: string
+          user_id: string
+          votacion_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opcion: string
+          unidad_id: string
+          user_id: string
+          votacion_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opcion?: string
+          unidad_id?: string
+          user_id?: string
+          votacion_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votos_unidad_id_fkey"
+            columns: ["unidad_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votos_votacion_id_fkey"
+            columns: ["votacion_id"]
+            isOneToOne: false
+            referencedRelation: "votaciones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificado_solicitudes: {
+        Row: {
+          consorcio_id: string
+          created_at: string
+          estado: Database["public"]["Enums"]["estado_certificado"]
+          id: string
+          nombre: string
+          solicitado_por: string
+          tipo_id: string
+          unidad_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          consorcio_id: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_certificado"]
+          id?: string
+          nombre: string
+          solicitado_por: string
+          tipo_id: string
+          unidad_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          consorcio_id?: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_certificado"]
+          id?: string
+          nombre?: string
+          solicitado_por?: string
+          tipo_id?: string
+          unidad_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificado_solicitudes_consorcio_id_fkey"
+            columns: ["consorcio_id"]
+            isOneToOne: false
+            referencedRelation: "consorcios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificado_solicitudes_unidad_id_fkey"
+            columns: ["unidad_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentos: {
+        Row: {
+          categoria: Database["public"]["Enums"]["categoria_documento"]
+          consorcio_id: string
+          created_at: string
+          id: string
+          nombre: string
+          peso_bytes: number | null
+          solo_propietarios: boolean
+          storage_path: string
+          subido_por: string | null
+        }
+        Insert: {
+          categoria: Database["public"]["Enums"]["categoria_documento"]
+          consorcio_id: string
+          created_at?: string
+          id?: string
+          nombre: string
+          peso_bytes?: number | null
+          solo_propietarios?: boolean
+          storage_path: string
+          subido_por?: string | null
+        }
+        Update: {
+          categoria?: Database["public"]["Enums"]["categoria_documento"]
+          consorcio_id?: string
+          created_at?: string
+          id?: string
+          nombre?: string
+          peso_bytes?: number | null
+          solo_propietarios?: boolean
+          storage_path?: string
+          subido_por?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_consorcio_id_fkey"
+            columns: ["consorcio_id"]
+            isOneToOne: false
+            referencedRelation: "consorcios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      boleta_recordatorios: {
+        Row: {
+          boleta_id: string
+          created_at: string
+          enviado_por: string
+          id: string
+        }
+        Insert: {
+          boleta_id: string
+          created_at?: string
+          enviado_por: string
+          id?: string
+        }
+        Update: {
+          boleta_id?: string
+          created_at?: string
+          enviado_por?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boleta_recordatorios_boleta_id_fkey"
+            columns: ["boleta_id"]
+            isOneToOne: false
+            referencedRelation: "boletas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       boleta_conceptos: {
         Row: {
           boleta_id: string
@@ -103,6 +568,7 @@ export type Database = {
       consorcios: {
         Row: {
           created_at: string
+          cuenta_id: string | null
           direccion: string
           es_demo: boolean
           id: string
@@ -112,6 +578,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          cuenta_id?: string | null
           direccion: string
           es_demo?: boolean
           id?: string
@@ -121,12 +588,107 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          cuenta_id?: string | null
           direccion?: string
           es_demo?: boolean
           id?: string
           nombre?: string
           telefono?: string | null
           updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consorcios_cuenta_id_fkey"
+            columns: ["cuenta_id"]
+            isOneToOne: false
+            referencedRelation: "cuentas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cuenta_miembros: {
+        Row: {
+          cuenta_id: string
+          created_at: string
+          id: string
+          rol: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          cuenta_id: string
+          created_at?: string
+          id?: string
+          rol?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          cuenta_id?: string
+          created_at?: string
+          id?: string
+          rol?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cuenta_miembros_cuenta_id_fkey"
+            columns: ["cuenta_id"]
+            isOneToOne: false
+            referencedRelation: "cuentas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cuentas: {
+        Row: {
+          created_at: string
+          estado: Database["public"]["Enums"]["estado_cuenta"]
+          id: string
+          nombre: string
+          plan: Database["public"]["Enums"]["plan_cuenta"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_cuenta"]
+          id?: string
+          nombre: string
+          plan?: Database["public"]["Enums"]["plan_cuenta"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          estado?: Database["public"]["Enums"]["estado_cuenta"]
+          id?: string
+          nombre?: string
+          plan?: Database["public"]["Enums"]["plan_cuenta"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notificacion_prefs: {
+        Row: {
+          asambleas: boolean
+          avisos: boolean
+          reclamos: boolean
+          updated_at: string
+          user_id: string
+          vencimientos: boolean
+        }
+        Insert: {
+          asambleas?: boolean
+          avisos?: boolean
+          reclamos?: boolean
+          updated_at?: string
+          user_id: string
+          vencimientos?: boolean
+        }
+        Update: {
+          asambleas?: boolean
+          avisos?: boolean
+          reclamos?: boolean
+          updated_at?: string
+          user_id?: string
+          vencimientos?: boolean
         }
         Relationships: []
       }
@@ -534,7 +1096,17 @@ export type Database = {
         | "proveedor"
         | "superadmin"
       canal_ticket: "app" | "whatsapp" | "email" | "telefono"
+      categoria_documento: "Reglamento" | "Balance" | "Acta" | "Seguro" | "Contrato"
+      estado_asamblea: "convocada" | "en_curso" | "cerrada"
+      estado_certificado: "en_proceso" | "listo"
       estado_boleta: "paga" | "pendiente" | "vencida"
+      estado_cuenta: "activa" | "prueba" | "suspendida"
+      estado_mudanza: "solicitada" | "aprobada" | "rechazada"
+      estado_reserva: "confirmada" | "pendiente" | "cancelada"
+      modalidad_asamblea: "presencial" | "virtual" | "mixta"
+      plan_cuenta: "base" | "pro" | "enterprise"
+      tipo_aviso: "informativo" | "urgente" | "mantenimiento"
+      tipo_mudanza: "mudanza" | "flete" | "obra"
       estado_ticket:
         | "nuevo"
         | "validando"
@@ -684,7 +1256,17 @@ export const Constants = {
         "superadmin",
       ],
       canal_ticket: ["app", "whatsapp", "email", "telefono"],
+      categoria_documento: ["Reglamento", "Balance", "Acta", "Seguro", "Contrato"],
+      estado_asamblea: ["convocada", "en_curso", "cerrada"],
+      estado_certificado: ["en_proceso", "listo"],
       estado_boleta: ["paga", "pendiente", "vencida"],
+      estado_cuenta: ["activa", "prueba", "suspendida"],
+      estado_mudanza: ["solicitada", "aprobada", "rechazada"],
+      estado_reserva: ["confirmada", "pendiente", "cancelada"],
+      modalidad_asamblea: ["presencial", "virtual", "mixta"],
+      plan_cuenta: ["base", "pro", "enterprise"],
+      tipo_aviso: ["informativo", "urgente", "mantenimiento"],
+      tipo_mudanza: ["mudanza", "flete", "obra"],
       estado_ticket: [
         "nuevo",
         "validando",
