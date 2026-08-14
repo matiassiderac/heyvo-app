@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://vjbgekvsfbivkojwdeng.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "heyvo",
+      "version": "0.1.0",
+      "title": "HEYVO"
+    },
+    "tools": [
+      {
+        "name": "mi_perfil",
+        "title": "Mi perfil y unidad",
+        "description": "Devuelve el consorcio, la unidad y el rol de la persona autenticada en HEYVO.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "listar_expensas",
+        "title": "Listar expensas",
+        "description": "Lista las boletas de expensas visibles para la persona autenticada, con período, vencimiento, total, interés y estado.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "estado": {
+              "description": "Filtro opcional por estado de la boleta.",
+              "type": "string",
+              "enum": [
+                "pendiente",
+                "paga",
+                "vencida"
+              ]
+            },
+            "limite": {
+              "default": 12,
+              "description": "Cantidad máxima de boletas.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "listar_reclamos",
+        "title": "Listar reclamos",
+        "description": "Lista los reclamos (tickets) visibles para la persona autenticada, con estado, prioridad, vencimiento del SLA e historial.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "estado": {
+              "description": "Filtro opcional por estado del reclamo.",
+              "type": "string",
+              "enum": [
+                "nuevo",
+                "en_curso",
+                "resuelto",
+                "cerrado",
+                "reabierto"
+              ]
+            },
+            "limite": {
+              "default": 15,
+              "description": "Cantidad máxima de reclamos.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "crear_reclamo",
+        "title": "Crear reclamo",
+        "description": "Crea un reclamo en el consorcio de la persona autenticada, con su unidad y el vencimiento de SLA según la prioridad.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "titulo": {
+              "type": "string",
+              "minLength": 3,
+              "description": "Título corto del reclamo."
+            },
+            "categoria": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Categoría, por ejemplo: plomería, electricidad, ascensores, limpieza."
+            },
+            "descripcion": {
+              "type": "string",
+              "minLength": 3,
+              "description": "Detalle de lo que pasa."
+            },
+            "prioridad": {
+              "default": "media",
+              "type": "string",
+              "enum": [
+                "alta",
+                "media",
+                "baja"
+              ]
+            }
+          },
+          "required": [
+            "titulo",
+            "categoria",
+            "descripcion"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "comentar_reclamo",
+        "title": "Comentar un reclamo",
+        "description": "Agrega un comentario al historial de un reclamo visible para la persona autenticada.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "reclamo_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "ID del reclamo (campo id de listar_reclamos)."
+            },
+            "texto": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Comentario a agregar al historial."
+            }
+          },
+          "required": [
+            "reclamo_id",
+            "texto"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
